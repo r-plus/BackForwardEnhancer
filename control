@@ -1,0 +1,15 @@
+Package: jp.r-plus.backforwardenhancer
+Name: BackForwardEnhancer
+Depends: mobilesubstrate
+Version: 0.1
+Architecture: iphoneos-arm
+Description: Back&Forward button Enhancer for Safari
+Maintainer: BigBoss <bigboss@thebigboss.org>
+Author: r_plus <anasthasia.r+backforwardenhancer@gmail.com>
+Section: Tweaks
+dev: rplus
+Tag: purpose::extension
+Priority: optional
+Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=backforwardenhancerData
+Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=backforwardenhancerData
+Sponsor: thebigboss.org <http://thebigboss.org>
