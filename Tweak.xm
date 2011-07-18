@@ -5,6 +5,8 @@
 + (id)sharedBrowserController;
 - (id)activeWebView;
 - (id)backForwardListDictionary;
+- (void)backFromButtonBar;
+- (void)forwardFromButtonBar;
 @end
 
 @interface WebBackForwardList : NSObject
@@ -97,27 +99,27 @@ static BOOL isActionSheetShowing = NO;
 		isActionSheetShowing = YES;
 		
 		SA_ActionSheet *sheet = [[SA_ActionSheet alloc] initWithTitle:nil delegate:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-		for (NSUInteger i = 0; i < [backLists count]; i++)
-				[sheet addButtonWithTitle:[[backLists objectAtIndex:i] objectForKey:@"title"]];
+
+		for (id item in [backLists reverseObjectEnumerator])
+			[sheet addButtonWithTitle:[item objectForKey:@"title"]];
 		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:@"Cancel"]];
 		
-    UIToolbarButton *button = (UIToolbarButton *)sender.view;
+		UIToolbarButton *button = (UIToolbarButton *)sender.view;
 		[sheet showFromRect:button.frame inView:self animated:YES buttonBlock:^(int buttonIndex){
 			
 			if (buttonIndex + 1 != [sheet numberOfButtons])
 			{
-				NSString *stringURL = [[backLists objectAtIndex:buttonIndex] objectForKey:@""""];
-				//NSLog(@"stringURL=%@", stringURL);
-				NSURL *urlURL = [NSURL URLWithString:stringURL];
-				//NSLog(@"urlURL=%@", urlURL);
-				NSURLRequest *request = [NSURLRequest requestWithURL:urlURL];
-				//NSLog(@"req=%@", request);
-				[[[%c(BrowserController) sharedBrowserController] activeWebView] loadRequest:request];
+				// goBack loop type action.
+				for (NSInteger i = 0; i < buttonIndex + 1; i++)
+					[[%c(BrowserController) sharedBrowserController] backFromButtonBar];
+				
+				/* goto page type action.
+				 NSString *stringURL = [[backLists objectAtIndex:buttonIndex] objectForKey:@""""];
+				 NSURL *urlURL = [NSURL URLWithString:stringURL];
+				 NSURLRequest *request = [NSURLRequest requestWithURL:urlURL];
+				 [[[%c(BrowserController) sharedBrowserController] activeWebView] loadRequest:request];
+				*/
 			}
-			/* goBack loop type action.
-			 for(int i = [sheet numberOfButtons] - 1; i > buttonIndex; i--)
-			 [[%c(BrowserController) sharedBrowserController] goBack];
-			 */	
 			isActionSheetShowing = NO;
 		}];
 		
@@ -133,24 +135,26 @@ static BOOL isActionSheetShowing = NO;
 		isActionSheetShowing = YES;
 		
 		SA_ActionSheet *sheet = [[SA_ActionSheet alloc] initWithTitle:nil delegate:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-		for (NSUInteger i = 0; i < [forwardLists count]; i++)
-				[sheet addButtonWithTitle:[[forwardLists objectAtIndex:i] objectForKey:@"title"]];
+		for (id item in forwardLists)
+			[sheet addButtonWithTitle:[item objectForKey:@"title"]];
 		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:@"Cancel"]];
 		
-    UIToolbarButton *button = (UIToolbarButton *)sender.view;
+		UIToolbarButton *button = (UIToolbarButton *)sender.view;
 		[sheet showFromRect:button.frame inView:self animated:YES buttonBlock:^(int buttonIndex){
 			
 			if (buttonIndex + 1 != [sheet numberOfButtons])
 			{
-				NSString *stringURL = [[forwardLists objectAtIndex:buttonIndex] objectForKey:@""""];
-				NSURL *urlURL = [NSURL URLWithString:stringURL];
-				NSURLRequest *request = [NSURLRequest requestWithURL:urlURL];
-				[[[%c(BrowserController) sharedBrowserController] activeWebView] loadRequest:request];
+				// goForward loop type action.
+				for (NSInteger i = 0; i < buttonIndex + 1; i++)
+					[[%c(BrowserController) sharedBrowserController] forwardFromButtonBar];
+				
+				/* goto page type action
+				 NSString *stringURL = [[forwardLists objectAtIndex:buttonIndex] objectForKey:@""""];
+				 NSURL *urlURL = [NSURL URLWithString:stringURL];
+				 NSURLRequest *request = [NSURLRequest requestWithURL:urlURL];
+				 [[[%c(BrowserController) sharedBrowserController] activeWebView] loadRequest:request];
+				*/
 			}
-			/* goForward loop type action.
-			 for(int i = [sheet numberOfButtons] - 1; i > buttonIndex; i--)
-			 [[%c(BrowserController) sharedBrowserController] goForward];
-			 */
 			isActionSheetShowing = NO;
 		}];
 		
