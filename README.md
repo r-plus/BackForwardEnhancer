@@ -7,7 +7,7 @@ this tweak is fork of [WillFour20's BookmarksBarTweak](https://github.com/WillFo
 
 Both MIT License.
 
-BackForwardEnhancer - Copyright (C) 2011 by r_plus
+BackForwardEnhancer - Copyright (C) 2011 by r_plus  
 [SA_ActionSheet](https://github.com/bengottlieb/UIActionSheet-Blocks) - Copyright (C) 2011 by Ben Gottlieb  
   
 Permission is hereby granted, free of charge, to any person obtaining a copy
