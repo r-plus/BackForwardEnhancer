@@ -70,26 +70,21 @@ static BOOL isActionSheetShowing = NO;
 - (id)createButtonWithDescription:(id)description
 {
 	id navButton = %orig;
-	switch ([[description objectForKey:@"UIButtonBarButtonTag"] intValue])
+	NSString *buttonAction = [description objectForKey:@"UIButtonBarButtonAction"];
+	
+	if ([buttonAction isEqualToString:@"backFromButtonBar"])
 	{
-		case 5://backButton
-		case 6:
-		{
-			UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(backButtonHeld:)];
-			[navButton addGestureRecognizer:holdGesture];
-			[holdGesture release];
-			break;
-		}
-		case 7://forwardButton
-		case 8:
-		{
-			UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(forwardButtonHeld:)];
-			[navButton addGestureRecognizer:holdGesture];
-			[holdGesture release];
-			break;
-		}
+		UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(backButtonHeld:)];
+		[navButton addGestureRecognizer:holdGesture];
+		[holdGesture release];
 	}
-
+	else if ([buttonAction isEqualToString:@"forwardFromButtonBar"])
+	{
+		UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(forwardButtonHeld:)];
+		[navButton addGestureRecognizer:holdGesture];
+		[holdGesture release];
+	}
+	
 	return navButton;
 }
 
