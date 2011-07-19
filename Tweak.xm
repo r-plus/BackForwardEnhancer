@@ -66,13 +66,14 @@ static BOOL isActionSheetShowing = NO;
 %hook BrowserButtonBar
 
 //return class=UIToolbarButton arg class=__NSCFDictionary
-//arg detail http://pastie.org/2221475
+//arg detail http://pastie.org/2236489
 - (id)createButtonWithDescription:(id)description
 {
 	id navButton = %orig;
 	switch ([[description objectForKey:@"UIButtonBarButtonTag"] intValue])
 	{
 		case 5://backButton
+		case 6:
 		{
 			UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(backButtonHeld:)];
 			[navButton addGestureRecognizer:holdGesture];
@@ -80,6 +81,7 @@ static BOOL isActionSheetShowing = NO;
 			break;
 		}
 		case 7://forwardButton
+		case 8:
 		{
 			UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(forwardButtonHeld:)];
 			[navButton addGestureRecognizer:holdGesture];
