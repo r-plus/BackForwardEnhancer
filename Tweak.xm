@@ -1,6 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "SA_ActionSheet.h"
 
+#define CANCEL_STRING NSLocalizedStringFromTableInBundle(@"Cancel (action sheet)", @"Localizable", [NSBundle bundleWithPath:@"/Applications/MobileSafari.app"], @"")
+
 @interface BrowserController : NSObject
 + (id)sharedBrowserController;
 - (id)activeWebView;
@@ -99,7 +101,7 @@ static BOOL isActionSheetShowing = NO;
 
 		for (id item in [backLists reverseObjectEnumerator])
 			[sheet addButtonWithTitle:[item objectForKey:@"title"]];
-		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:@"Cancel"]];
+		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
 		
 		UIToolbarButton *button = (UIToolbarButton *)sender.view;
 		[sheet showFromRect:button.frame inView:self animated:YES buttonBlock:^(int buttonIndex){
@@ -134,7 +136,7 @@ static BOOL isActionSheetShowing = NO;
 		SA_ActionSheet *sheet = [[SA_ActionSheet alloc] initWithTitle:nil delegate:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
 		for (id item in forwardLists)
 			[sheet addButtonWithTitle:[item objectForKey:@"title"]];
-		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:@"Cancel"]];
+		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
 		
 		UIToolbarButton *button = (UIToolbarButton *)sender.view;
 		[sheet showFromRect:button.frame inView:self animated:YES buttonBlock:^(int buttonIndex){
