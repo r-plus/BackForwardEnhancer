@@ -3,6 +3,13 @@
 ![](http://moreinfo.thebigboss.org/moreinfo/backforwardenhancer1.png)  
 this tweak is fork of [WillFour20's BookmarksBarTweak](https://github.com/WillFour20/BookmarksBarTweak).
 
+##Usage for developer
+
+MobileSafari or global tweak developer can call BackForwardEnhancer's sheet and function.  
+
+`if ([[objc_getClass("BrowserController") sharedBrowserController] respondsToSelector:@selector(showBackListSheet:)])`
+`  [[objc_getClass("BrowserController") sharedBrowserController] performSelector:@selector(showBackListSheet:) withObject:nil];`
+
 ##License
 
 Both MIT License.
