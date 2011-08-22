@@ -7,12 +7,22 @@ this tweak is fork of [WillFour20's BookmarksBarTweak](https://github.com/WillFo
 
 MobileSafari or global tweak developer can call BackForwardEnhancer's sheet and function.  
 
+(1)insert interface of BrowserController.
+
     @interface BrowserController : NSObject
     + (id)sharedBrowserController;
     @end
-    
+
+(2)call two lines.
+
     if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showBackListSheet:)])
       [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showBackListSheet:) withObject:nil];
+
+or forwardList is below
+
+    if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showForwardListSheet:)])
+      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showForwardListSheet:) withObject:nil];
+      
 
 ##License
 
