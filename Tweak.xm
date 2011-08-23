@@ -59,24 +59,24 @@ static BOOL isActionSheetShowing = NO;
 //arg detail http://pastie.org/2236489
 - (id)createButtonWithDescription:(id)description
 {
-	id navButton = %orig;
+  id navButton = %orig;
   id bc = [%c(BrowserController) sharedBrowserController];
-	NSString *buttonAction = [description objectForKey:@"UIButtonBarButtonAction"];
+  NSString *buttonAction = [description objectForKey:@"UIButtonBarButtonAction"];
   
-	if ([buttonAction isEqualToString:@"backFromButtonBar"])
-	{
-		UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showBackListSheet:)];
-		[navButton addGestureRecognizer:holdGesture];
-		[holdGesture release];
-	}
-	else if ([buttonAction isEqualToString:@"forwardFromButtonBar"])
-	{
-		UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showForwardListSheet:)];
-		[navButton addGestureRecognizer:holdGesture];
-		[holdGesture release];
-	}
+  if ([buttonAction isEqualToString:@"backFromButtonBar"])
+  {
+    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showBackListSheet:)];
+    [navButton addGestureRecognizer:holdGesture];
+    [holdGesture release];
+  }
+  else if ([buttonAction isEqualToString:@"forwardFromButtonBar"])
+  {
+    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showForwardListSheet:)];
+    [navButton addGestureRecognizer:holdGesture];
+    [holdGesture release];
+  }
   
-	return navButton;
+  return navButton;
 }
 %end
 
@@ -85,10 +85,10 @@ static BOOL isActionSheetShowing = NO;
 %new(v@:@)
 -(void)showBackListSheet:(UILongPressGestureRecognizer *)sender
 {
-	if (!isActionSheetShowing) {
-		isActionSheetShowing = YES;
+  if (!isActionSheetShowing) {
+    isActionSheetShowing = YES;
     
-		UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
     sheet.tag = 24;
     NSDictionary *dict = [[[[[%c(BrowserController) sharedBrowserController] activeWebView] webView] backForwardList] dictionaryRepresentation];
     NSUInteger current = [[dict objectForKey:@"current"] intValue];
@@ -99,9 +99,9 @@ static BOOL isActionSheetShowing = NO;
       for (NSUInteger i = 0; i < current; i++)
         [backLists addObject:[entries objectAtIndex:i]];
     
-		for (id item in [backLists reverseObjectEnumerator])// add buttons
-			[sheet addButtonWithTitle:[item objectForKey:@"title"]];
-		[sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
+    for (id item in [backLists reverseObjectEnumerator])// add buttons
+      [sheet addButtonWithTitle:[item objectForKey:@"title"]];
+    [sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
     
     id tv = [[%c(BrowserController) sharedBrowserController] transitionView];
     
@@ -111,8 +111,8 @@ static BOOL isActionSheetShowing = NO;
     } else { // from other
       [sheet showInView:tv];
     }
-		[sheet release];
-	}
+    [sheet release];
+  }
 }
 
 %new(v@:)
