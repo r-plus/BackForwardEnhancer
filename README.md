@@ -24,12 +24,9 @@ or forwardList is below
       [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showForwardListSheet:) withObject:nil];
       
 
-##License
-
-Both MIT License.
+##License (MIT)
 
 BackForwardEnhancer - Copyright (C) 2011 by r_plus  
-[SA_ActionSheet](https://github.com/bengottlieb/UIActionSheet-Blocks) - Copyright (C) 2011 by Ben Gottlieb  
   
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
