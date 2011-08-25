@@ -7,6 +7,7 @@
 + (id)sharedBrowserController;
 - (id)tabController;
 - (id)transitionView;
+- (void)showHistorySheet:(UILongPressGestureRecognizer *)sender backOrForward:(BOOL)isBackSheet;
 - (id)webView;
 - (id)backForwardList;
 - (BOOL)goToBackForwardItem:(id)arg1;
@@ -60,95 +61,79 @@ static BOOL isActionSheetShowing = NO;
 - (id)createButtonWithDescription:(id)description
 {
   id navButton = %orig;
-  id bc = [%c(BrowserController) sharedBrowserController];
   NSString *buttonAction = [description objectForKey:@"UIButtonBarButtonAction"];
   
-  if ([buttonAction isEqualToString:@"backFromButtonBar"])
+  if ([buttonAction isEqualToString:@"backFromButtonBar"] || [buttonAction isEqualToString:@"forwardFromButtonBar"])
   {
-    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showBackListSheet:)];
-    [navButton addGestureRecognizer:holdGesture];
-    [holdGesture release];
-  }
-  else if ([buttonAction isEqualToString:@"forwardFromButtonBar"])
-  {
-    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showForwardListSheet:)];
+    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showHistorySheet:)];
     [navButton addGestureRecognizer:holdGesture];
     [holdGesture release];
   }
   
   return navButton;
 }
+
+%new(v@:@)
+- (void)showHistorySheet:(UILongPressGestureRecognizer *)sender
+{
+  if (!isActionSheetShowing){
+    isActionSheetShowing = YES;
+    switch (sender.view.tag) {
+      case 5:
+      case 6:
+        [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:YES];
+        break;
+      case 7:
+      case 8:
+        [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:NO];
+        break;
+      default:
+        break;
+    }
+  }
+}
 %end
 
 %hook BrowserController
 
 %new(v@:@)
--(void)showBackListSheet:(UILongPressGestureRecognizer *)sender
+- (void)showHistorySheet:(UILongPressGestureRecognizer *)sender backOrForward:(BOOL)isBackSheet
 {
-  if (!isActionSheetShowing) {
-    isActionSheetShowing = YES;
-    
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-    sheet.tag = 24;
-    NSDictionary *dict = [[[[[%c(BrowserController) sharedBrowserController] activeWebView] webView] backForwardList] dictionaryRepresentation];
-    NSUInteger current = [[dict objectForKey:@"current"] intValue];
-    NSArray *entries = [dict objectForKey:@"entries"];
-    NSMutableArray *backLists = [NSMutableArray array];
-    
+  UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+  NSDictionary *dict = [[[[[%c(BrowserController) sharedBrowserController] activeWebView] webView] backForwardList] dictionaryRepresentation];
+  NSUInteger current = [[dict objectForKey:@"current"] intValue];
+  NSArray *entries = [dict objectForKey:@"entries"];
+  NSMutableArray *historyLists = [NSMutableArray array];
+  
+  if (isBackSheet){
+    sheet.tag = 24;    
     if (current > 0)// make backHistory list
       for (NSUInteger i = 0; i < current; i++)
-        [backLists addObject:[entries objectAtIndex:i]];
-    
-    for (id item in [backLists reverseObjectEnumerator])// add buttons
+        [historyLists addObject:[entries objectAtIndex:i]];
+    for (id item in [historyLists reverseObjectEnumerator])// add buttons
       [sheet addButtonWithTitle:[item objectForKey:@"title"]];
-    [sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
-    
-    id tv = [[%c(BrowserController) sharedBrowserController] transitionView];
-    
-    if (sender != nil ) {// from LongPress
-      UIToolbarButton *button = (UIToolbarButton *)sender.view;
-      [sheet showFromRect:button.frame inView:tv animated:YES];
-    } else { // from other
-      [sheet showInView:tv];
-    }
-    [sheet release];
-  }
-}
-
-%new(v@:)
--(void)showForwardListSheet:(UILongPressGestureRecognizer *)sender
-{
-  if (!isActionSheetShowing) {
-    isActionSheetShowing = YES;
-		
-    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+  } else {
     sheet.tag = 25;
-    NSDictionary *dict = [[[[[%c(BrowserController) sharedBrowserController] activeWebView] webView] backForwardList] dictionaryRepresentation];
-    NSUInteger current = [[dict objectForKey:@"current"] intValue];
-    NSArray *entries = [dict objectForKey:@"entries"];
-    NSMutableArray *forwardLists = [NSMutableArray array];
-    
     if (current + 1 < [entries count])// make forwardHistory list
       for (NSUInteger i = current + 1; i < [entries count]; i++)
-        [forwardLists addObject:[entries objectAtIndex:i]];
-    
-    for (id item in forwardLists)// add buttons
+        [historyLists addObject:[entries objectAtIndex:i]];
+    for (id item in historyLists)// add buttons
       [sheet addButtonWithTitle:[item objectForKey:@"title"]];
-    [sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
-		
-    id tv = [[%c(BrowserController) sharedBrowserController] transitionView];
-    
-    if (sender != nil) { // from LongPress
-      UIToolbarButton *button = (UIToolbarButton *)sender.view;
-      [sheet showFromRect:button.frame inView:tv animated:YES];
-    } else { // from other
-      [sheet showInView:tv];
-    }
-    [sheet release];
   }
+  [sheet setCancelButtonIndex:[sheet addButtonWithTitle:CANCEL_STRING]];
+  
+  id tv = [[%c(BrowserController) sharedBrowserController] transitionView];
+  
+  if (sender != nil ) {// from LongPress
+    UIToolbarButton *button = (UIToolbarButton *)sender.view;
+    [sheet showFromRect:button.frame inView:tv animated:YES];
+  } else { // from other
+    [sheet showInView:tv];
+  }
+  [sheet release];
 }
 
--(void)actionSheet:(UIActionSheet*)sheet clickedButtonAtIndex:(int)buttonIndex
+- (void)actionSheet:(UIActionSheet*)sheet clickedButtonAtIndex:(int)buttonIndex
 {
   if (sheet.tag == 24 || sheet.tag == 25) {
     if (buttonIndex + 1 != [sheet numberOfButtons]) { // If cancel clicked, only return.

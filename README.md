@@ -15,13 +15,13 @@ MobileSafari or global tweak developer can call BackForwardEnhancer's sheet and 
 
 (2) call two lines.
 
-    if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showBackListSheet:)])
-      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showBackListSheet:) withObject:nil];
+    if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showHistorySheet:backOrForward:)])
+      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showHistorySheet:backOrForward:) withObject:nil withObject:YES];
 
 or forwardList is below
 
-    if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showForwardListSheet:)])
-      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showForwardListSheet:) withObject:nil];
+    if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showHistorySheet:backOrForward:)])
+      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showHistorySheet:backOrForward:) withObject:nil withObject:NO];
       
 
 ##License (MIT)
