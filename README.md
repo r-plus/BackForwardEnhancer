@@ -11,18 +11,18 @@ MobileSafari or global tweak developer can call BackForwardEnhancer's sheet and 
 
     @interface BrowserController : NSObject
     + (id)sharedBrowserController;
+    - (void)showHistorySheet:(id)sender backOrForward:(BOOL)isBackSheet;
     @end
 
 (2) call two lines.
 
     if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showHistorySheet:backOrForward:)])
-      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showHistorySheet:backOrForward:) withObject:nil withObject:YES];
+      [[%c(BrowserController) sharedBrowserController] showHistorySheet:nil backOrForward:YES];
 
 or forwardList is below
 
     if ([[%c(BrowserController) sharedBrowserController] respondsToSelector:@selector(showHistorySheet:backOrForward:)])
-      [[%c(BrowserController) sharedBrowserController] performSelector:@selector(showHistorySheet:backOrForward:) withObject:nil withObject:NO];
-      
+      [[%c(BrowserController) sharedBrowserController] showHistorySheet:nil backOrForward:NO];      
 
 ##License (MIT)
 
