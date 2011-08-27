@@ -100,6 +100,7 @@ static BOOL isActionSheetShowing = NO;
 - (void)showHistorySheet:(UILongPressGestureRecognizer *)sender backOrForward:(BOOL)isBackSheet
 {
   UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+  [sheet setAlertSheetStyle:2];
   NSDictionary *dict = [[[[[%c(BrowserController) sharedBrowserController] activeWebView] webView] backForwardList] dictionaryRepresentation];
   NSUInteger current = [[dict objectForKey:@"current"] intValue];
   NSArray *entries = [dict objectForKey:@"entries"];
