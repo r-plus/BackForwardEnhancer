@@ -1,60 +1,77 @@
 #import <UIKit/UIKit.h>
 
-#define MAX_LIMIT 100
+#define MAX_LIMIT 20
 #define CANCEL_STRING NSLocalizedStringFromTableInBundle(@"Cancel (action sheet)", @"Localizable", [NSBundle bundleWithPath:@"/Applications/MobileSafari.app"], @"")
 
 @interface BrowserController : NSObject <UIActionSheetDelegate>
 + (id)sharedBrowserController;
-- (id)tabController;
 - (id)transitionView;
 - (void)showHistorySheet:(UILongPressGestureRecognizer *)sender backOrForward:(BOOL)isBackSheet;
 - (id)webView;
 - (id)backForwardList;
 - (BOOL)goToBackForwardItem:(id)arg1;
 - (id)activeWebView;
-- (id)backForwardListDictionary;
-- (void)backFromButtonBar;
-- (void)forwardFromButtonBar;
 @end
 
 @interface WebBackForwardList : NSObject
-- (id)dictionaryRepresentation;
 - (id)backListWithLimit:(int)arg1;
 - (id)forwardListWithLimit:(int)arg1;
-@end
-
-@interface BrowserButtonBar : UIToolbar
 @end
 
 @interface UIToolbarButton : UIControl
 @end
 
+@interface UIBarButtonItem (BackForwardEnhancer)
+- (id)view;
+@end
+
 static BOOL isActionSheetShowing = NO;
 
-// regist LongPressGesture
+// iOS 5x
+%hook BrowserToolbar
+- (void)_installGestureRecognizers
+{
+  %orig;
+  
+  // SpacedBarButtonItem : UIBarButtonItem : UIBarItem : NSObject  
+  id back = MSHookIvar<id>(self, "_backItem");
+  id forward = MSHookIvar<id>(self, "_forwardItem");
+  
+  if (back != nil) {
+    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showBackHistorySheet:)];
+    [[back view] addGestureRecognizer:holdGesture];
+    [holdGesture release];
+  }
+  
+  if (forward != nil) {
+    UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showForwardHistorySheet:)];
+    [[forward view] addGestureRecognizer:holdGesture];
+    [holdGesture release];    
+  }
+}
+
+%new(v@:@)
+- (void)showBackHistorySheet:(UILongPressGestureRecognizer *)sender
+{
+  if (!isActionSheetShowing){
+    isActionSheetShowing = YES;
+    [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:YES];
+  }
+}
+
+%new(v@:@)
+- (void)showForwardHistorySheet:(UILongPressGestureRecognizer *)sender
+{
+  if (!isActionSheetShowing){
+    isActionSheetShowing = YES;
+    [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:NO];
+  }
+}
+
+%end
+
+// iOS4x
 %hook BrowserButtonBar
-/* v0.4 regist type. But not compatible iOS5?
- - (void)positionButtons:(id)buttons tags:(int*)tags count:(int)count group:(int)group
- {
- id bc = [%c(BrowserController) sharedBrowserController];
- 
- for (UIToolbarButton *item in buttons) {
- if ([item tag] == 5 || [item tag] == 6 )
- {
- UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showBackListSheet:)];
- [item addGestureRecognizer:holdGesture];
- [holdGesture release];
- }
- else if ([item tag] == 7 || [item tag] == 8)
- {
- UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:bc action:@selector(showForwardListSheet:)];
- [item addGestureRecognizer:holdGesture];
- [holdGesture release];
- }
- }
- %orig;
- }
- */
 
 //return class=UIToolbarButton arg class=__NSCFDictionary
 //arg detail http://pastie.org/2236489
@@ -95,6 +112,13 @@ static BOOL isActionSheetShowing = NO;
 %end
 
 %hook BrowserController
+
+%group iOS5
+%new(@@:)
+- (id)transitionView {
+  return MSHookIvar<id>(self, "_transitionView");
+}
+%end
 
 %new(v@:@)
 - (void)showHistorySheet:(UILongPressGestureRecognizer *)sender backOrForward:(BOOL)isBackSheet
@@ -156,3 +180,13 @@ static BOOL isActionSheetShowing = NO;
 }
 
 %end
+
+%ctor
+{
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];  
+  BOOL isFirmware5x = [[[UIDevice currentDevice] systemVersion] hasPrefix:@"5"];
+  %init;
+  if (isFirmware5x)
+    %init(iOS5);
+  [pool release];  
+}
