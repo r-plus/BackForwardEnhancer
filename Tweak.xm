@@ -37,13 +37,13 @@ static BOOL isActionSheetShowing = NO;
   id back = MSHookIvar<id>(self, "_backItem");
   id forward = MSHookIvar<id>(self, "_forwardItem");
   
-  if (back != nil) {
+  if (back) {
     UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showBackHistorySheet:)];
     [[back view] addGestureRecognizer:holdGesture];
     [holdGesture release];
   }
   
-  if (forward != nil) {
+  if (forward) {
     UILongPressGestureRecognizer *holdGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showForwardHistorySheet:)];
     [[forward view] addGestureRecognizer:holdGesture];
     [holdGesture release];    
