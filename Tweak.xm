@@ -25,7 +25,7 @@
 - (id)view;
 @end
 
-static BOOL isActionSheetShowing = NO;
+static BOOL isShowingActionSheet = NO;
 
 // iOS 5x
 %hook BrowserToolbar
@@ -49,8 +49,8 @@ static BOOL isActionSheetShowing = NO;
 %new(v@:@)
 - (void)showBackHistorySheet:(UILongPressGestureRecognizer *)sender
 {
-  if (!isActionSheetShowing){
-    isActionSheetShowing = YES;
+  if (!isShowingActionSheet){
+    isShowingActionSheet = YES;
     [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:YES];
   }
 }
@@ -58,8 +58,8 @@ static BOOL isActionSheetShowing = NO;
 %new(v@:@)
 - (void)showForwardHistorySheet:(UILongPressGestureRecognizer *)sender
 {
-  if (!isActionSheetShowing){
-    isActionSheetShowing = YES;
+  if (!isShowingActionSheet){
+    isShowingActionSheet = YES;
     [[%c(BrowserController) sharedBrowserController] showHistorySheet:sender backOrForward:NO];
   }
 }
@@ -89,8 +89,8 @@ static BOOL isActionSheetShowing = NO;
 %new(v@:@)
 - (void)showHistorySheet:(UILongPressGestureRecognizer *)sender
 {
-  if (!isActionSheetShowing){
-    isActionSheetShowing = YES;
+  if (!isShowingActionSheet){
+    isShowingActionSheet = YES;
     switch (sender.view.tag) {
       case 5:
       case 6:
@@ -168,7 +168,7 @@ static BOOL isActionSheetShowing = NO;
         [wv goToBackForwardItem:[fl objectAtIndex:buttonIndex]];
       }
     }
-    isActionSheetShowing = NO;
+    isShowingActionSheet = NO;
     return;
   }
   
@@ -179,10 +179,10 @@ static BOOL isActionSheetShowing = NO;
 
 %ctor
 {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];  
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   BOOL isFirmware5x = [[[UIDevice currentDevice] systemVersion] hasPrefix:@"5"];
   %init;
   if (isFirmware5x)
     %init(iOS5);
-  [pool release];  
+  [pool drain];
 }
