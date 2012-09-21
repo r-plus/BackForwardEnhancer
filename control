@@ -1,6 +1,6 @@
 Package: jp.r-plus.backforwardenhancer
 Name: BackForwardEnhancer
-Depends: mobilesubstrate
+Depends: mobilesubstrate, firmware (<= 5.2)
 Version: 0.5
 Architecture: iphoneos-arm
 Description: Back&Forward button Enhancer for Safari
